@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload Homework</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    video, canvas {
+      max-width: 100%;
+      border: 2px solid #00ffcc;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+    button {
+      background-color: #00ffcc;
+      color: #000;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    a button {
+      margin-top: 20px;
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Take a Photo of Your Homework</h1>
+  <video id="video" width="320" height="240" autoplay></video>
+  <br />
+  <button id="snap">Take Photo</button>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  <p>After taking a photo, please save it locally and upload it using the button below:</p>
+  <a href="https://forms.gle/6coQnEcXJLzXSRUa7" target="_blank" rel="noopener">
+    <button>Submit via Google Form</button>
+  </a>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const snap = document.getElementById('snap');
+
+    // Access the webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => alert('Error accessing camera: ' + err));
+
+    snap.addEventListener('click', () => {
+      // Draw video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      canvas.style.display = 'block';
+
+      // Save the photo to user's device
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'homework_photo.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('Photo saved to your device. Now you can upload it via the form below.');
+      });
+    });
+  </script>
+</body>
+</html>
